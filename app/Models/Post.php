@@ -1,19 +1,21 @@
 <?php  
 
+namespace App\Models;
 use Illuminate\Support\Facades\File;
 use Illuminate\Database\Eloquent\ModuleNotFoundException;
 
 
-namespace App\Models;
 
 class Post
 
 {
-	public function all()
+	public static function all()
 
 	{
 
-		return File
+		$files =  File::files(resource_path("posts/"));
+
+		return array_map(fn ($file) => $file ->getContents(), $files);
 	}
 
 	public static function find($slug)
@@ -23,7 +25,7 @@ class Post
 	    if (! file_exists($path = resource_path("posts/{$slug}.html"))){
 
 	        throw new ModuleNotFoundException();
-	        ;
+	        
 	    }
 
 	    return cache()->remember("posts.{$slug}", 1200, fn () => file_get_contents($path));
